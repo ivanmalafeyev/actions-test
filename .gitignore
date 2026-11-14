@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+venv/
+.env
+.coverage
+coverage.json
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+.DS_Store
+vulture_whitelist.py
