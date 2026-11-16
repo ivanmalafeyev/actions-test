@@ -13,4 +13,4 @@ build/
 *.egg-info/
 .DS_Store
 vulture_whitelist.py
-.cach/
+.cache/
