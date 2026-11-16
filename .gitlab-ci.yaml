@@ -1,0 +1,58 @@
+stages:
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  MYPY_VERSION: "1.18"
+
+# Кеш pip по умолчанию — общий для всех джоб
+cache:
+  key:
+    files:
+      - pyproject.toml
+  paths:
+    - .cache/pip
+
+test:
+  stage: test
+  image: python:$PYTHON_VERSION
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.13"]
+  # Отдельный ключ кеша для каждой версии Python
+  cache:
+    key:
+      prefix: "$PYTHON_VERSION"
+      files:
+        - pyproject.toml
+    paths:
+      - .cache/pip
+  script:
+    - python -m pip install --upgrade pip
+    - pip install -e ".[dev]"
+    - python -m pytest -v
+
+lint:
+  stage: test
+  image: python:3.13-slim
+  needs:
+    - job: test
+  when: always
+  script:
+    - python -m pip install --upgrade pip
+    - pip install -e ".[dev]"
+    - ruff format --check .
+    - ruff check .
+
+typecheck:
+  stage: test
+  image: python:3.13-slim
+  needs:
+    - job: test
+  when: always
+  script:
+    - python -m pip install --upgrade pip
+    - pip install -e ".[dev]"
+    - pip install "mypy~=$MYPY_VERSION.0"
+    - mypy .
+
